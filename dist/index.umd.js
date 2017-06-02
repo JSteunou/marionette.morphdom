@@ -76,6 +76,7 @@ var morphdomMixin = {
         if (this.throttleRender) {
             var interval = lodash.isNumber(this.throttleRender) ? this.throttleRender : 16;
             this.render = lodash.throttle(this.render.bind(this), interval);
+            this.on('before:destroy', this.render.cancel);
         }
     },
 
