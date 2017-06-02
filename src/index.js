@@ -67,6 +67,7 @@ const morphdomMixin = {
         if (this.throttleRender) {
             const interval = isNumber(this.throttleRender) ? this.throttleRender : 16;
             this.render = throttle(this.render.bind(this), interval);
+            this.on('before:destroy', this.render.cancel);
         }
     },
 
