@@ -1,6 +1,6 @@
 {
     "name": "marionette.morphdom",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Use morphdom with backbone.marionette",
     "author": "Jérôme Steunou",
     "license": "MIT",
