@@ -17,8 +17,8 @@
         "rollup-plugin-babel": "^2.7.1"
     },
     "scripts": {
-        "build": "rollup -c"
-    },
-    "preversion": "git checkout develop && git pull git checkout master && git pull && git merge develop --no-edit && npm run build && git add . && git commit -m 'Update dist'",
-    "postversion": "git checkout develop && git merge master --no-edit && git checkout master && git push && git push --tags && git checkout develop && git push"
+        "build": "rollup -c",
+        "preversion": "git checkout develop && git pull && git checkout master && git pull && git merge develop --no-edit && npm run build && git add . && git commit -m 'Update dist'",
+        "postversion": "git checkout develop && git merge master --no-edit && git checkout master && git push && git push --tags && git checkout develop && git push"
+    }
 }
