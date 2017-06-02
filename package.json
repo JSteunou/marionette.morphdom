@@ -17,6 +17,6 @@
         "rollup-plugin-babel": "^2.7.1"
     },
     "scripts": {
-        "build": "rollup -c && rollup -c -o dist/index.esm.js -f es"
+        "build": "rollup -c"
     }
 }
