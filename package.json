@@ -1,0 +1,22 @@
+{
+    "name": "marionette.morphdom",
+    "version": "0.1.0",
+    "description": "Use morphdom with backbone.marionette",
+    "author": "Jérôme Steunou",
+    "license": "MIT",
+    "main": "dist/index.umd.js",
+    "module": "dist/index.esm.js",
+    "dependencies": {
+        "backbone.marionette": "3.x.x",
+        "lodash": "4.x.x",
+        "morphdom": "2.x.x"
+    },
+    "devDependencies": {
+        "babel-preset-es2015-rollup": "^3.0.0",
+        "rollup": "^0.41.6",
+        "rollup-plugin-babel": "^2.7.1"
+    },
+    "scripts": {
+        "build": "rollup -c && rollup -c -o dist/index.esm.js -f es"
+    }
+}
