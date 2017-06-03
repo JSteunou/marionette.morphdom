@@ -1,80 +1,138 @@
-# marionette.morphdom
+# Marionette Morphdom Plugin
 
-This is a [backbone.marionette](https://github.com/marionettejs/backbone.marionette) mixin to use [morphdom](https://github.com/patrick-steele-idem/morphdom) in your views.
+A Mixin for [backbone.marionette][marionette-gh] to replace the standard view
+rendering functions with [morphdom][morphdom-gh].
 
-Using morphdom in your view will allow you to have DOM diffing & patching without changing your template engine as morphdom deals with real DOM and can take String, DOM or V-DOM as input.
+Morphdom is a lightweight module for manipulating your HTML DOM tree to match a
+given HTML string, DOM or Virtual DOM input. Morphdom figures out the minimal
+number of operations to achieve this.
 
-When using this mixin, each call to render will patch your view, make it always up to date if render is called after each state change.
+This mixin lets you use morphdom with Marionette without changing your template
+engine. The morphdom mixin patches `render` to update the view instead of using
+`innerHTML`.
 
+## Using marionette.morphdom
 
-# Install
+To use marionette.morphdom in your code, inject `morphdomMixin` into your `View`:
+
+```js
+import Mn from 'backbone.marionette';
+import morphdomMixin from 'marionette.morphdom';
+
+// Note the morphdomMixin inside the extend chain
+export const Mn.View.extend(morphdomMixin).extend({
+  // Your regular code here
+})
+```
+
+### Install
+
+`marionette.morphdom` is available on NPM:
 
 ```
 npm i marionette.morphdom
 ```
 
 
-# Example
+### Example
+
+To use the morphdom mixin, just import from `marionette.morphdom` and call
+`Mn.View.extend` with the morphdom mixin. An example below:
 
 ```js
-import Backone from 'backbone';
+import Bb from 'backbone';
 import Mn from 'backbone.marionette';
 import morphdomMixin from 'marionette.morphdom';
 
-const MyView = Mn.View.extend(morphdomMixin).extend({
-    template: data => `<section><h1>${data.title}</h1><p>${data.article}</p></section>`,
+export const MyView = Mn.View.extend(morphdomMixin).extend({
+  template: data => `<section><h1>${data.title}</h1><p>${data.article}</p></section>`,
 
-    modelEvents: {
-        change: 'render'
-    },
+  modelEvents: {
+    change: 'render'
+  },
 
-    initialize: function() {
-        this.model = new Backbone.Model({
-            title: 'How to keep this view update to date?',
-            article: 'You should use marionette morphdom!'
-        });
-    }
+  initialize: function() {
+    this.model = new Bb.Model({
+      title: 'How do I keep this view update to date?',
+      article: 'Use marionette morphdom!'
+    });
+  }
 
 });
-
-export default MyView;
 ```
 
-That's it. Anytime your model change, your view will be patched.
+That's it. Anytime your model change, morphdom will take over the `render` for
+you.
 
 
-# FAQ
+## FAQ
 
-## Why?
+### Why?
 
 Because default Marionette render does `innerHTML` to update the view.
 
-## Is this slower or faster than... ?
+### Is this slower or faster than... ?
 
-If you already update all your view by *hand* using jquery or vanilla DOM update or tools for data binding like backbone.stickit this might be slower because it will render the all view before patching. The real advantage is that you can drop all your code dealing with manual precise update and develop quicker. See it as a compromise between performance and development speed. Also if your view are not too big and well split and your template engine fast, you should not experience a big performance regression while the gain in development is quite big.
+For most Marionette users who just use `render` for updating your views, this
+will be a huge performance boost.
 
-If you are already just calling render in your views, this should improve greatly your app performance.
+If, however, you perform a lot of direct DOM manipulation or use data binding
+tools like `backbone.stickit`, then this may be slower. Morpdom must render the
+entire view before it can patch it. Depending on the size of your views, this
+penalty may be larger or smaller - the less DOM your view looks after, the
+smaller the performance penalty.
 
-The other real performance advantage against things like vdom, is that the diffing & patching process is DOM against DOM. There is no intermediary tree or vtree in memory, no steps between.
+The benefit of using morphdom is that you can limit the amount of manual DOM
+manipulation while maintaining acceptable performance in your app. In this
+instance, using `marionette.morphdom` should greatly improve your team's
+productivity.
 
-For more information on morphdom performance see this [FAQ](https://github.com/patrick-steele-idem/morphdom#faq)
+A key advantage of morphdom against virtual-dom is that the diff and patch
+process works on the actual DOM tree, reducing the number of intermediary steps
+and reducing memory usage.
 
-## Why I should drop View tagName, className, ... ?
+For more information on morphdom performance see this
+[FAQ](https://github.com/patrick-steele-idem/morphdom#faq)
 
-Because those properties are used by Backbone to build the view root `el` but if you have some classes or attributes in it depending on your view state, those were not updated on `render`, you had to update it manually. As this mixin only use the content of your template and use the top root node as view `el` you can drop Backbone.View `tagName`, `className`, `attributes` and stop mix html from view and template.
+### Why Should I Drop View tagName, className, etc?
 
-## Why should I use only one root node in my templates?
+Because those properties are used by Backbone to build the view root `el` but if
+you have some classes or attributes in it depending on your view state, those were
+not updated on `render`, you had to update it manually. As this mixin only use the
+content of your template and use the top root node as view `el` you can drop
+Backbone.View `tagName`, `className`, `attributes` and stop mix html from view and
+template.
 
-See above ;)
+### Why should I use only one root node in my templates?
 
-## If my state updates a lot, very fast, how can I prevent the view to be rendered at the same rate?
+See the [above question](#why-should-i-drop-view-tagname-classname-etc)
 
-This mixin comes with the `throttleRender` property, which is set on `false` by default. By setting it on `true`, the render call will be throttled to 16ms. You can also set it to a numerical value, like `150`, to throttle the render to 150ms.
+### How Can I Throttle Re-rendering if I update State a Lot?
 
-## Will my regions be erased on each render?
+This mixin comes with the `throttleRender` property, which is set on `false` by
+default. By setting it on `true`, the render call will be throttled to 16ms. You
+can also set it to a numerical value, like `150`, to throttle the render to 150ms.
 
-Nope. If it happens, please fill an issue with your case.
+```js
+export const MyView = Mn.View.extend(morphdomMixin).extend({
+  throttleRender: true // Throttle to every 16ms
+});
 
-## Why morphdom and not X?
+export const SlowRenderView = Mn.View.extend(morphdomMixin).extend({
+  throttleRender: 150 // Throttle to every 150ms
+});
+```
 
-Because morphdom does one job, only, but does it very well, without making other assumption on your stack for you. You are free to use any template engine as input. You are free to call the render mechanism anytime at the rate you want. You are free to not using it and keep manual update for big, critical views. Also I agree with the author, the DOM is not slow, and you can bet browser vendors will keep making it faster & faster ;)
+### How Are Regions Affected?
+
+Regions will be preserved between `render` calls.
+
+### Why morphdom?
+
+Morphdom does one job really well without forcing you to make decisions elsewhere
+in your Marionette stack. You can use any template engine and call `render` as
+often as you like. You can mix morphdom into only the views that need it and
+leave it out of the ones where you need to manage the update state manually.
+
+[marionette-gh]: https://github.com/marionettejs/backbone.marionette
+[morphdom-gh]: https://github.com/patrick-steele-idem/morphdom
