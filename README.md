@@ -3,9 +3,9 @@
 A Mixin for [backbone.marionette][marionette-gh] to replace the standard view
 rendering functions with [morphdom][morphdom-gh].
 
-Morphdom is a lightweight module for manipulating your HTML DOM tree to match a
-given HTML string, DOM or Virtual DOM input. Morphdom figures out the minimal
-number of operations to achieve this.
+Morphdom is a lightweight module for diffing and patching your HTML DOM tree to
+match a given HTML string, DOM or Virtual DOM input. Morphdom figures out the
+minimal number of operations to achieve this.
 
 This mixin lets you use morphdom with Marionette without changing your template
 engine. The morphdom mixin patches `render` to update the view instead of using
@@ -77,10 +77,9 @@ For most Marionette users who just use `render` for updating your views, this
 will be a huge performance boost.
 
 If, however, you perform a lot of direct DOM manipulation or use data binding
-tools like `backbone.stickit`, then this may be slower. Morpdom must render the
-entire view before it can patch it. Depending on the size of your views, this
-penalty may be larger or smaller - the less DOM your view looks after, the
-smaller the performance penalty.
+tools like `backbone.stickit`, then this may be slower. `marionette.morphdom` must render the entire view before it can patch it. Depending on the size of your
+views, this penalty may be larger or smaller - the less DOM your view looks
+after, the smaller the performance penalty.
 
 The benefit of using morphdom is that you can limit the amount of manual DOM
 manipulation while maintaining acceptable performance in your app. In this
